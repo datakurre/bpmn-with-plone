@@ -21,15 +21,28 @@ Documentation     The content-lifecycle pattern: signals plus BPMN boundary
 ...               own* document even though Operaton's /signal endpoint
 ...               always broadcasts by name. Three webhook content rules
 ...               produce that same string from the Plone side: one starts
-...               an instance with `uuid` set from the new content's own
-...               UUID, and two more signal that instance back whenever the
-...               *same* content is later modified or removed --
-...               `${uuid}` in the payload is Plone's own interpolation
-...               token, resolved before the HTTP call is even made, quite
-...               separate from Operaton's own `${uuid}` in the BPMN model,
-...               resolved after it arrives; they only need to agree on the
-...               value, which they do because both ultimately come from the
-...               same Plone content's UUID.
+...               an instance with its `uuid` process variable set from the
+...               new content's own UUID, and two more signal that instance
+...               back whenever the *same* content is later modified or
+...               removed.
+...
+...               `${uid}` in the payload -- not `${uuid}` -- is Plone's own
+...               interpolation token for a content's UUID, resolved before
+...               the HTTP call is even made; it is registered by
+...               `collective.webhook` itself (as "uid"/"parent_uid"; see
+...               its src/collective/webhook/adapters.py). `collective.
+...               bpmproxy` separately registers its own, differently named
+...               `${uuid}`/`${parent_uuid}` tokens for the same value (see
+...               its adapters/substitutions.py) -- installing only
+...               `collective.webhook`, as this playground does, `${uuid}`
+...               in a payload is not a registered token at all and
+...               `string.Template.safe_substitute` (which
+...               `plone.stringinterp` uses) leaves it as the literal text
+...               "${uuid}" rather than raising, so this is easy to get
+...               wrong silently. Operaton's own, separate `${uuid}` EL
+...               expression in the BPMN model is unaffected either way: it
+...               reads the `uuid` *process variable* this story's payloads
+...               set, whatever Plone-side token supplied its value.
 ...
 ...               Built on resources/webhook.resource's `Add Webhook Content
 ...               Rule`, `Wait For Process Instance In Cockpit` and `Show
@@ -48,9 +61,9 @@ ${DOC_PATH_MODIFIED}      plone-conference-2027-unveiled
 ${DOC_TITLE_DELETED}      Draft: cancelled sponsor slot
 ${DOC_PATH_DELETED}       draft-cancelled-sponsor-slot
 @{DEMO_PATHS}             ${DOC_PATH_MODIFIED}    ${DOC_PATH_DELETED}
-${START_PAYLOAD}          {"variables": {"contentUrl": {"value": "\${url}", "type": "String"}, "uuid": {"value": "\${uuid}", "type": "String"}}}
-${MODIFIED_PAYLOAD}       {"name": "demo-content-modified:\${uuid}", "variables": {"contentUrl": {"value": "\${url}", "type": "String"}}}
-${DELETED_PAYLOAD}        {"name": "demo-content-deleted:\${uuid}", "variables": {"contentUrl": {"value": "\${url}", "type": "String"}}}
+${START_PAYLOAD}          {"variables": {"contentUrl": {"value": "\${url}", "type": "String"}, "uuid": {"value": "\${uid}", "type": "String"}}}
+${MODIFIED_PAYLOAD}       {"name": "demo-content-modified:\${uid}", "variables": {"contentUrl": {"value": "\${url}", "type": "String"}}}
+${DELETED_PAYLOAD}        {"name": "demo-content-deleted:\${uid}", "variables": {"contentUrl": {"value": "\${url}", "type": "String"}}}
 
 
 *** Tasks ***

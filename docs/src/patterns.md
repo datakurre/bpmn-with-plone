@@ -41,10 +41,10 @@ A worker subscribed to its topic can then submit the update to Plone through its
 
 The request leg is wired the same way as fire and forget: a content rule `POST`s to `/message` (or `/process-definition/key/.../start`; see [setup.md](setup.md)) to start the instance. The update leg is an external task, not a webhook: configure the message end event's `camunda:topic` and run a worker (see setup.md's "External task workers") that calls Plone's own REST API (`plone.restapi`) to update the content or move its workflow state once the work completes.
 
-A process connects back to *the same* piece of content by carrying its identity as a process variable -- typically Plone's own UUID, since it survives moves and renames. The content rule's JSON payload sets it once, from `${uuid}`, when the instance starts:
+A process connects back to *the same* piece of content by carrying its identity as a process variable -- typically Plone's own UUID, since it survives moves and renames. The content rule's JSON payload sets it once, from `${uid}` -- `collective.webhook`'s own interpolation token for a content's UUID -- when the instance starts:
 
 ```json
-{"variables": {"uuid": {"value": "${uuid}", "type": "String"}}}
+{"variables": {"uuid": {"value": "${uid}", "type": "String"}}}
 ```
 
 From there, the worker (or a script task) can look content up by UUID through `plone.restapi`'s `@querystring`/`@search` endpoints, or (for a message or signal correlated *back* to this instance) as a correlation key or part of the signal's name -- see "Content lifecycle signals" below for propagating further content-state changes, such as an edit or a deletion, to an already-running instance.
@@ -61,18 +61,20 @@ The patterns above all show a single request-response between Plone and a proces
 :caption: A user task with two interrupting boundary signal events, named after the content's own UUID, reacting to that content changing while the task is still open.
 ```
 
-Both `${uuid}` placeholders shown resolve independently, at different times, in different systems, but agree on the same value:
+The `${uuid}` in the diagram above and `${uid}` used below look alike but are not the same placeholder, resolved by two different systems at two different times -- they only need to agree on the *value*, which they do because both ultimately come from the same Plone content's UUID:
 
-- In the content rule's own JSON payload, `${uuid}` is Plone's [`plone.stringinterp`](https://collective.github.io/collective.webhook/) placeholder. It is substituted with the *triggering* content's UUID before the HTTP request is even sent, turning `demo-content-modified:${uuid}` into a plain string like `demo-content-modified:1e2f...`.
-- In the BPMN model, `${uuid}` is an Operaton EL expression inside the `bpmn:signal` element's own `name`. It is evaluated per process instance, against that instance's own `uuid` process variable, at the moment the boundary event's subscription is created -- turning the same literal template into the same string, but resolved from the *instance's* side.
+- In the content rule's own JSON payload, `${uid}` is Plone's own interpolation token for a content's UUID. It is substituted with the *triggering* content's UUID before the HTTP request is even sent. This token is registered by `collective.webhook` itself (as `uid`/`parent_uid`; see its `src/collective/webhook/adapters.py`) -- it is not part of core `plone.stringinterp`, which ships `${url}`/`${title}`/etc. but no UUID token of its own.
+- In the BPMN model, `${uuid}` is an Operaton EL expression inside the `bpmn:signal` element's own `name`. It is evaluated per process instance, against that instance's own `uuid` process variable (set from `${uid}` when the instance started, above) at the moment the boundary event's subscription is created -- turning the literal template `demo-content-modified:${uuid}` into a plain string like `demo-content-modified:1e2f...`, resolved from the *instance's* side.
 
-Because a fresh instance was started with its `uuid` variable set from that content's UUID in the first place (see "Complementary", above), both sides land on the same string, and only the matching instance's boundary event fires -- every other instance's subscription is for a different literal signal name and never sees the call.
+`collective.bpmproxy` happens to register its *own*, differently named `${uuid}`/`${parent_uuid}` interpolation tokens for the same content's-UUID value (see its `adapters/substitutions.py`) -- installing only `collective.webhook`, as this playground does, `${uuid}` in a payload is not a registered token at all, and `plone.stringinterp`'s `string.Template.safe_substitute` leaves an unmatched placeholder as the literal text `"${uuid}"` rather than raising an error. Typing `${uuid}` instead of `${uid}` into a `collective.webhook` payload is therefore a mistake that fails silently: every instance would receive the identical, un-interpolated literal signal name, so every boundary event would fire together instead of only the matching document's own instance. Check what an add-on actually registers (`grep -r IStringSubstitution` in its source, or its `configure.zcml`) before relying on a placeholder name.
+
+Because a fresh instance was started with its `uuid` process variable set from `${uid}` in the first place (see "Complementary", above), both sides land on the same string, and only the matching instance's boundary event fires -- every other instance's subscription is for a different literal signal name and never sees the call.
 
 | Plone event | Content rule condition | `collective.webhook` call | BPMN element |
 |---|---|---|---|
-| Object added to this container | none | `POST {ENGINE_URL}/process-definition/key/.../start` with `variables.uuid` set from `${uuid}` | plain start event |
-| Object modified | none | `POST {ENGINE_URL}/signal` with `name` = `"...:${uuid}"` | interrupting boundary signal event on the open task |
-| Object removed from this container | none | `POST {ENGINE_URL}/signal` with `name` = `"...:${uuid}"` | a second interrupting boundary signal event |
+| Object added to this container | none | `POST {ENGINE_URL}/process-definition/key/.../start` with `variables.uuid` set from `${uid}` | plain start event |
+| Object modified | none | `POST {ENGINE_URL}/signal` with `name` = `"...:${uid}"` | interrupting boundary signal event on the open task |
+| Object removed from this container | none | `POST {ENGINE_URL}/signal` with `name` = `"...:${uid}"` | a second interrupting boundary signal event |
 
 [`scripts/screencasts/webhook_content_lifecycle.robot`](https://github.com/collective/bpmn-with-plone/blob/main/scripts/screencasts/webhook_content_lifecycle.robot)
 in this repository's source is a runnable version of exactly this, wired with three plain `collective.webhook` content rules against `docs/src/diagrams/ping.bpmn` -- this playground's own deployed process, which carries the same two boundary events. [`collective.bpmproxy`](https://github.com/collective/collective.bpmproxy)'s own

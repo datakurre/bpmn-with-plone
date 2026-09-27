@@ -30,9 +30,12 @@ Plone, Operaton hears about it once. `webhook_content_lifecycle.robot` is
 the more useful pattern in practice -- a process that keeps listening to
 *the same* Plone document throughout its own lifetime, and reacts when that
 document is later modified or removed, not only to what started it. See
-`docs/src/patterns.md` for the general pattern and why the same `${uuid}`
-placeholder means two different things in the two systems that resolve it.
-`collective.bpmproxy`'s own
+`docs/src/patterns.md` for the general pattern, and
+webhook_content_lifecycle.robot's own Documentation for why its payloads use
+`${uid}`, not `${uuid}` -- `collective.webhook` and `collective.bpmproxy`
+each register their own, differently named interpolation token for a
+content's UUID, and only `collective.webhook`'s is available in this
+playground. `collective.bpmproxy`'s own
 [`examples/published-lifecycle/example-published-lifecycle.bpmn`](https://github.com/collective/collective.bpmproxy/blob/main/examples/published-lifecycle/example-published-lifecycle.bpmn)
 and
 [`backend/src/collective/bpmproxy/profiles/default/contentrules.xml`](https://github.com/collective/collective.bpmproxy/blob/main/backend/src/collective/bpmproxy/profiles/default/contentrules.xml)

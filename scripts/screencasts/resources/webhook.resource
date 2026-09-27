@@ -54,10 +54,14 @@ Add Webhook Content Rule
     ...    `event` -- one of Plone's built-in "Triggering event" choices,
     ...    e.g. "Object added to this container" or "Workflow state
     ...    changed" -- add a "Call webhook" action that calls `method` on
-    ...    `url` with `payload` as its JSON payload (use `${url}`/`${title}`/…
-    ...    to interpolate values from the triggering content, per
-    ...    collective.webhook's own substitutions table), and apply the rule
-    ...    to the whole site.
+    ...    `url` with `payload` as its JSON payload (use `${url}`/`${title}`/
+    ...    `${uid}`/… to interpolate values from the triggering content, per
+    ...    collective.webhook's own substitutions table -- `${uid}` is its
+    ...    own UUID token, registered in
+    ...    src/collective/webhook/adapters.py; collective.bpmproxy registers
+    ...    a differently named `${uuid}` for the same value, which is not
+    ...    available here since this playground does not install it), and
+    ...    apply the rule to the whole site.
     ...
     ...    When `event` is "Workflow state changed", pass one or more
     ...    `transitions` to also add Plone's own "Workflow transition"
