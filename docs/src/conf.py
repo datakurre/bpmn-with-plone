@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.abspath("_ext"))
 
 project = "BPMN with Plone"
 author = "Plone community"
-copyright = str(datetime.now().year)
+copyright = "2026"  # str(datetime.now().year)
 
 # -- General configuration ---------------------------------------------------
 

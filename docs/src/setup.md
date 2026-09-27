@@ -1,4 +1,4 @@
-# Setup
+# Example Setup
 
 This guide describes the pieces used to run the BPMN-with-Plone examples. The
 main components are Plone, the Operaton process engine, and any external task
@@ -10,7 +10,7 @@ be able to reach the others by their service URLs.
 - Docker, for running Operaton locally.
 - A Plone site where you can install add-ons and configure content rules.
 - Python 3.10 or later if you are writing a worker with `operaton-tasks`.
-- VS Code, or GitHub Codespaces, for editing BPMN models and code.
+- VS Code with extension for editing BPMN models and code.
 
 For a quick start with the complete project environment, open the project in
 [GitHub Codespaces](https://codespaces.new/datakurre/bpmn-with-plone). The
@@ -170,13 +170,19 @@ network; `localhost` only works when the engine shares that network namespace.
 
 ## VS Code
 
-The recommended editor setup is the same as the project's development
-container, including support for BPMN model files and the languages used by
-the examples. Opening the project in Codespaces applies that setup
-automatically. In a local VS Code installation, install the extensions listed
-by the development-container configuration and open the project folder (rather
-than an individual documentation file) so workspace settings and extension
-recommendations are available.
+The development container installs these VS Code extensions:
+
+- `datakurre.vscode-operaton-bpmn-js-modeler`
+- `datakurre.vscode-operaton-dmn-js-modeler`
+- `datakurre.vscode-operaton-form-js-modeler`
+- `ms-python.python`
+- `ms-python.vscode-pylance`
+
+Opening the project in Codespaces applies this setup automatically. In a local
+VS Code installation, install these extensions and open the project folder
+rather than an individual documentation file so workspace settings and
+extension recommendations are available. The extension list is defined in
+`.devcontainer/devcontainer.json`.
 
 ## Verify the setup
 

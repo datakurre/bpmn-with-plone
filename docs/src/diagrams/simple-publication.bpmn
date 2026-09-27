@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_Publication" targetNamespace="http://bpmn.io/schema/bpmn">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_Publication" targetNamespace="http://bpmn.io/schema/bpmn">
   <bpmn:collaboration id="Collaboration_1">
     <bpmn:participant id="Participant_SimplePublication" name="Simple Publication" processRef="Process_SimplePublication" />
     <bpmn:participant id="Participant_1ndvnor" name="Plone CMS" />
@@ -8,7 +8,7 @@
     <bpmn:messageFlow id="Flow_1rwkoji" name="retract" sourceRef="Participant_1ndvnor" targetRef="Event_0pqm8gl" />
     <bpmn:messageFlow id="Flow_1dslh1n" name="publish" sourceRef="EndEvent_Published" targetRef="Participant_1ndvnor" />
   </bpmn:collaboration>
-  <bpmn:process id="Process_SimplePublication" isExecutable="true">
+  <bpmn:process id="Process_SimplePublication" isExecutable="true" camunda:historyTimeToLive="7">
     <bpmn:laneSet id="LaneSet_1">
       <bpmn:lane id="Lane_Creator" name="Author">
         <bpmn:flowNodeRef>Event_1yy2gbd</bpmn:flowNodeRef>
@@ -38,11 +38,11 @@
     <bpmn:intermediateThrowEvent id="Event_1yy2gbd" name="Submit">
       <bpmn:incoming>Flow_Submit</bpmn:incoming>
       <bpmn:outgoing>Flow_1lmaaal</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_198ntba" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_198ntba" camunda:type="external" camunda:topic="submit" />
     </bpmn:intermediateThrowEvent>
     <bpmn:endEvent id="EndEvent_Published" name="Publish">
       <bpmn:incoming>Flow_Approved</bpmn:incoming>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_0w1py80" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0w1py80" camunda:type="external" camunda:topic="publish" />
     </bpmn:endEvent>
     <bpmn:exclusiveGateway id="Gateway_Approved" name="Was approved?">
       <bpmn:incoming>Flow_ToGateway</bpmn:incoming>
@@ -56,7 +56,7 @@
     <bpmn:intermediateThrowEvent id="Event_0w25drc" name="Reject">
       <bpmn:incoming>Flow_Rejected</bpmn:incoming>
       <bpmn:outgoing>Flow_0otltv8</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_03f8qjh" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_03f8qjh" camunda:type="external" camunda:topic="reject" />
     </bpmn:intermediateThrowEvent>
     <bpmn:exclusiveGateway id="Gateway_1hayhic">
       <bpmn:incoming>Flow_0otltv8</bpmn:incoming>
