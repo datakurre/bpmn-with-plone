@@ -12,8 +12,12 @@ Documentation     Configuring collective.webhook to broadcast a BPMN signal
 ...               Built on resources/webhook.resource's `Add Webhook Content
 ...               Rule` and `Wait For Process Instance In Cockpit` -- see
 ...               that resource's Documentation for what each does, and this
-...               directory's README.md for how the three webhook_*.robot
-...               scenarios relate.
+...               directory's README.md for how the four webhook_*.robot
+...               scenarios relate. The payload also sets a `uuid` process
+...               variable from the published content's own UUID --
+...               webhook_content_lifecycle.robot's boundary events key off
+...               it to react to that same document later being modified or
+...               removed.
 Library           screencast.Screencast    take_dir=${TAKE_DIR}    record=${RECORD}
 Resource          resources/webhook.resource
 
@@ -23,7 +27,7 @@ ${SHOTS_DIR}      ${TAKE_DIR}/screenshots
 ${DOC_TITLE}      Plone Conference 2027 unveiled!
 ${DOC_PATH}       plone-conference-2027-unveiled
 @{DEMO_PATHS}     ${DOC_PATH}
-${PAYLOAD}        {"name": "plone", "variables": {"contentUrl": {"value": "\${url}", "type": "String"}, "contentTitle": {"value": "\${title}", "type": "String"}}}
+${PAYLOAD}        {"name": "plone", "variables": {"contentUrl": {"value": "\${url}", "type": "String"}, "contentTitle": {"value": "\${title}", "type": "String"}, "uuid": {"value": "\${uuid}", "type": "String"}}}
 
 
 *** Tasks ***

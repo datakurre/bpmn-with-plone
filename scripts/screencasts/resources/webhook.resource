@@ -16,16 +16,19 @@ Documentation     Project keywords for documenting collective.webhook content
 ...               same check regardless of whether it started, correlated a
 ...               message to, or signalled the process instance.
 ...
-...               See webhook_message.robot, webhook_signal.robot and
-...               webhook_process_start.robot for the three scenarios built
-...               on them, and README.md in this directory for how they
-...               relate. collective/collective.bpmproxy's own BPM Message
-...               and BPM Signal content-rule actions
+...               See webhook_message.robot, webhook_signal.robot,
+...               webhook_process_start.robot and
+...               webhook_content_lifecycle.robot for the four scenarios
+...               built on them, and README.md in this directory for how
+...               they relate. collective/collective.bpmproxy's own BPM
+...               Message and BPM Signal content-rule actions
 ...               (https://github.com/collective/collective.bpmproxy) are a
 ...               higher-level alternative to typing the raw Operaton REST
 ...               calls in a collective.webhook payload by hand -- they carry
-...               engine credentials and multi-tenancy for you, at the cost
-...               of an extra add-on.
+...               engine credentials, multi-tenancy and per-document signal
+...               correlation for you (see
+...               profiles/default/contentrules.xml there), at the cost of
+...               an extra add-on.
 Library           screencast.Screencast
 Library           webhook_keywords.py
 
@@ -100,6 +103,20 @@ Wait For Process Instance In Cockpit
     ...    Wait Until Visible    a[href*="/process-instance/"]    index=-1    timeout=1000
     Human Click    a[href*="/process-instance/"]    index=-1
 
+Show Completed Instance In Cockpit History
+    [Documentation]    Enter `process_definition_key`'s History tab in
+    ...    Cockpit and open its most recently completed instance -- proof
+    ...    that the instance actually ended (a boundary event firing, for
+    ...    instance), since a still-running instance never appears there.
+    [Tags]    screencast:wait
+    [Arguments]    ${process_definition_key}    ${retries}=20x    ${interval}=3s
+    Observe    url=${COCKPIT_URL}/#/processes
+    Human Click    role=link[name="${process_definition_key}"]
+    Human Click    text=History    index=-1
+    Wait Until Keyword Succeeds    ${retries}    ${interval}
+    ...    Wait Until Visible    a[href*="/history/process-instance/"]    index=-1    timeout=1000
+    Human Click    a[href*="/history/process-instance/"]    index=-1
+
 Log In To Cockpit
     [Documentation]    Complete Cockpit's own login form in an unrecorded
     ...    context and return its storage_state() for `Start Observer` --
@@ -128,3 +145,21 @@ Publish Current Document
     ...    document currently open, from Plone's own contentmenu.
     Human Click    \#plone-contentmenu-workflow a
     Human Click    role=link[name="Publish"]
+
+Edit Current Document
+    [Documentation]    Open the document currently open for editing and
+    ...    re-save it with an updated Description -- enough to fire Plone's
+    ...    "Object modified" event without changing what the document is
+    ...    about.
+    [Arguments]    ${description}=Updated by the webhook screencast.
+    Human Click    role=link[name="Edit"]
+    Human Type    \#form-widgets-IDublinCore-description    ${description}
+    Human Click    role=button[name="Save"]
+
+Delete Current Document
+    [Documentation]    Delete the document currently open, through Plone's
+    ...    own "Actions" contentmenu and its delete confirmation page --
+    ...    fires "Object removed from this container".
+    Human Click    \#plone-contentmenu-actions a
+    Human Click    role=link[name="Delete"]
+    Human Click    role=button[name="Delete"]

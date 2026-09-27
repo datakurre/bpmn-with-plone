@@ -68,12 +68,16 @@ reachable from that container instead.
 
 A content rule can call any of Operaton's REST endpoints the same way, not
 only process start: `POST` to `/message` to correlate a BPMN message, or to
-`/signal` to broadcast a signal. [`scripts/screencasts/`](https://github.com/collective/bpmn-with-plone/tree/main/scripts/screencasts)
-in this repository's source walks through all three against this playground's
-own `ping.bpmn`, as three
+`/signal` to broadcast a signal -- and a signal named after the content's own
+UUID lets an already-running instance react later to that same content being
+modified or removed; see [Content lifecycle signals](patterns.md#content-lifecycle-signals).
+[`scripts/screencasts/`](https://github.com/collective/bpmn-with-plone/tree/main/scripts/screencasts)
+in this repository's source walks through all of these against this
+playground's own `ping.bpmn`, as four
 [`robotframework-screencast`](https://github.com/datakurre/robotframework-screencast)
-stories built on two project keywords (one to configure the rule through
-Plone's UI, one to confirm the call arrived in Operaton Cockpit).
+stories built on a handful of project keywords (one to configure a rule
+through Plone's UI, others to confirm a call arrived in, or a boundary event
+ended an instance in, Operaton Cockpit).
 [`collective.bpmproxy`](https://github.com/collective/collective.bpmproxy)
 provides dedicated BPM Message and BPM Signal content-rule actions as a
 higher-level alternative to typing the raw REST call in a `collective.webhook`
