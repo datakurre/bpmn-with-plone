@@ -66,6 +66,19 @@ Operaton run in separate containers, `localhost` in a URL refers to the
 container making the request; use a shared Docker network or an address
 reachable from that container instead.
 
+A content rule can call any of Operaton's REST endpoints the same way, not
+only process start: `POST` to `/message` to correlate a BPMN message, or to
+`/signal` to broadcast a signal. [`scripts/screencasts/`](https://github.com/collective/bpmn-with-plone/tree/main/scripts/screencasts)
+in this repository's source walks through all three against this playground's
+own `ping.bpmn`, as three
+[`robotframework-screencast`](https://github.com/datakurre/robotframework-screencast)
+stories built on two project keywords (one to configure the rule through
+Plone's UI, one to confirm the call arrived in Operaton Cockpit).
+[`collective.bpmproxy`](https://github.com/collective/collective.bpmproxy)
+provides dedicated BPM Message and BPM Signal content-rule actions as a
+higher-level alternative to typing the raw REST call in a `collective.webhook`
+payload by hand.
+
 ## Operaton
 
 Operaton executes BPMN processes and provides the REST API and web applications

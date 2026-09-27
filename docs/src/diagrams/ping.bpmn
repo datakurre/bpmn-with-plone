@@ -17,6 +17,7 @@
     <bpmn:exclusiveGateway id="Gateway_0rmgs2h">
       <bpmn:incoming>Flow_18mkyny</bpmn:incoming>
       <bpmn:incoming>Flow_0gnaygx</bpmn:incoming>
+      <bpmn:incoming>Flow_1sig4al</bpmn:incoming>
       <bpmn:outgoing>Flow_0d3megd</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_0d3megd" sourceRef="Gateway_0rmgs2h" targetRef="Activity_1po92ji" />
@@ -24,8 +25,14 @@
       <bpmn:outgoing>Flow_0gnaygx</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_0gnaygx" sourceRef="Event_0nyxoxh" targetRef="Gateway_0rmgs2h" />
+    <bpmn:startEvent id="Event_1sig4al">
+      <bpmn:outgoing>Flow_1sig4al</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalEventDefinition_0kwvka8" signalRef="Signal_29pnpju" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1sig4al" sourceRef="Event_1sig4al" targetRef="Gateway_0rmgs2h" />
   </bpmn:process>
   <bpmn:message id="Message_29pnpju" name="plone" />
+  <bpmn:signal id="Signal_29pnpju" name="plone" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Demo">
       <bpmndi:BPMNShape id="Event_05qa38f_di" bpmnElement="Event_1343cpb">
@@ -43,6 +50,9 @@
       <bpmndi:BPMNShape id="Event_0nyxoxh_di" bpmnElement="Event_0nyxoxh">
         <dc:Bounds x="100" y="42" width="36" height="36" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1sig4al_di" bpmnElement="Event_1sig4al">
+        <dc:Bounds x="100" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_04hsnw4_di" bpmnElement="Flow_04hsnw4">
         <di:waypoint x="366" y="140" />
         <di:waypoint x="426" y="140" />
@@ -59,6 +69,11 @@
         <di:waypoint x="136" y="60" />
         <di:waypoint x="200" y="60" />
         <di:waypoint x="200" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1sig4al_di" bpmnElement="Flow_1sig4al">
+        <di:waypoint x="136" y="220" />
+        <di:waypoint x="200" y="220" />
+        <di:waypoint x="200" y="165" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
