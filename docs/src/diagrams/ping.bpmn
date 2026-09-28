@@ -5,7 +5,7 @@
       <bpmn:incoming>Flow_04hsnw4</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_04hsnw4" sourceRef="Activity_1po92ji" targetRef="Event_038yn05" />
-    <bpmn:userTask id="Activity_1po92ji" name="User Task">
+    <bpmn:userTask id="Activity_1po92ji" name="Review page">
       <bpmn:incoming>Flow_0d3megd</bpmn:incoming>
       <bpmn:outgoing>Flow_04hsnw4</bpmn:outgoing>
     </bpmn:userTask>
@@ -17,6 +17,7 @@
     <bpmn:exclusiveGateway id="Gateway_0rmgs2h">
       <bpmn:incoming>Flow_18mkyny</bpmn:incoming>
       <bpmn:incoming>Flow_0gnaygx</bpmn:incoming>
+      <bpmn:incoming>Flow_1sig4al</bpmn:incoming>
       <bpmn:outgoing>Flow_0d3megd</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_0d3megd" sourceRef="Gateway_0rmgs2h" targetRef="Activity_1po92ji" />
@@ -24,8 +25,32 @@
       <bpmn:outgoing>Flow_0gnaygx</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_0gnaygx" sourceRef="Event_0nyxoxh" targetRef="Gateway_0rmgs2h" />
+    <bpmn:startEvent id="Event_1sig4al">
+      <bpmn:outgoing>Flow_1sig4al</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalEventDefinition_0kwvka8" signalRef="Signal_29pnpju" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1sig4al" sourceRef="Event_1sig4al" targetRef="Gateway_0rmgs2h" />
+    <bpmn:boundaryEvent id="Event_content_modified" name="Content modified" attachedToRef="Activity_1po92ji">
+      <bpmn:outgoing>Flow_to_modified_end</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalEventDefinition_modified" signalRef="Signal_modified" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_to_modified_end" sourceRef="Event_content_modified" targetRef="Event_modified_end" />
+    <bpmn:endEvent id="Event_modified_end" name="Ended: content modified">
+      <bpmn:incoming>Flow_to_modified_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:boundaryEvent id="Event_content_deleted" name="Content removed" attachedToRef="Activity_1po92ji">
+      <bpmn:outgoing>Flow_to_deleted_end</bpmn:outgoing>
+      <bpmn:signalEventDefinition id="SignalEventDefinition_deleted" signalRef="Signal_deleted" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_to_deleted_end" sourceRef="Event_content_deleted" targetRef="Event_deleted_end" />
+    <bpmn:endEvent id="Event_deleted_end" name="Ended: content removed">
+      <bpmn:incoming>Flow_to_deleted_end</bpmn:incoming>
+    </bpmn:endEvent>
   </bpmn:process>
   <bpmn:message id="Message_29pnpju" name="plone" />
+  <bpmn:signal id="Signal_29pnpju" name="plone" />
+  <bpmn:signal id="Signal_modified" name="demo-content-modified:${uuid}" />
+  <bpmn:signal id="Signal_deleted" name="demo-content-deleted:${uuid}" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Demo">
       <bpmndi:BPMNShape id="Event_05qa38f_di" bpmnElement="Event_1343cpb">
@@ -43,6 +68,21 @@
       <bpmndi:BPMNShape id="Event_0nyxoxh_di" bpmnElement="Event_0nyxoxh">
         <dc:Bounds x="100" y="42" width="36" height="36" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1sig4al_di" bpmnElement="Event_1sig4al">
+        <dc:Bounds x="100" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_content_modified_di" bpmnElement="Event_content_modified">
+        <dc:Bounds x="280" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_modified_end_di" bpmnElement="Event_modified_end">
+        <dc:Bounds x="280" y="260" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_content_deleted_di" bpmnElement="Event_content_deleted">
+        <dc:Bounds x="320" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_deleted_end_di" bpmnElement="Event_deleted_end">
+        <dc:Bounds x="320" y="260" width="36" height="36" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_04hsnw4_di" bpmnElement="Flow_04hsnw4">
         <di:waypoint x="366" y="140" />
         <di:waypoint x="426" y="140" />
@@ -59,6 +99,19 @@
         <di:waypoint x="136" y="60" />
         <di:waypoint x="200" y="60" />
         <di:waypoint x="200" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1sig4al_di" bpmnElement="Flow_1sig4al">
+        <di:waypoint x="136" y="220" />
+        <di:waypoint x="200" y="220" />
+        <di:waypoint x="200" y="165" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_modified_end_di" bpmnElement="Flow_to_modified_end">
+        <di:waypoint x="298" y="198" />
+        <di:waypoint x="298" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_deleted_end_di" bpmnElement="Flow_to_deleted_end">
+        <di:waypoint x="338" y="198" />
+        <di:waypoint x="338" y="260" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

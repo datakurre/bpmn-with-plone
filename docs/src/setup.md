@@ -55,6 +55,21 @@ without embedding process-engine code in Plone.
    Replace the example URL with a value from the Plone content item. The
    webhook add-on supports interpolated JSON; use its documentation for the
    supported interpolation syntax.
+
+   ```{figure} images/webhook-content-rule.png
+   :alt: A saved Plone content rule named "Notify Operaton of new content", showing its Call webhook action as "POST http://localhost:8800/engine-rest/message (verbose)" and applied to the whole site
+   :width: 80%
+   :align: center
+
+   A configured rule, as Plone shows it back after saving: the action's summary line is the quickest way to confirm the URL, method and verbose flag actually took.
+   ```
+
+   `collective.webhook`'s "Verbose logging" field is required in the form's
+   own validation, even though it is a plain checkbox -- leave it unchecked
+   (an unchecked HTML checkbox submits nothing at all, not `false`) and
+   saving fails with "Please check this box if you want to proceed."; check
+   it to save, which usefully also logs the request and response while you
+   are still setting things up.
 4. Trigger the rule with test content and verify both the webhook request and
    the resulting process instance in Operaton.
 
@@ -65,6 +80,23 @@ handling before using it for high-volume or production workflows. If Plone and
 Operaton run in separate containers, `localhost` in a URL refers to the
 container making the request; use a shared Docker network or an address
 reachable from that container instead.
+
+A content rule can call any of Operaton's REST endpoints the same way, not
+only process start: `POST` to `/message` to correlate a BPMN message, or to
+`/signal` to broadcast a signal -- and a signal named after the content's own
+UUID lets an already-running instance react later to that same content being
+modified or removed; see [Content lifecycle signals](patterns.md#content-lifecycle-signals).
+[`scripts/screencasts/`](https://github.com/collective/bpmn-with-plone/tree/main/scripts/screencasts)
+in this repository's source walks through all of these against this
+playground's own `ping.bpmn`, as four
+[`robotframework-screencast`](https://github.com/datakurre/robotframework-screencast)
+stories built on a handful of project keywords (one to configure a rule
+through Plone's UI, others to confirm a call arrived in, or a boundary event
+ended an instance in, Operaton Cockpit).
+[`collective.bpmproxy`](https://github.com/collective/collective.bpmproxy)
+provides dedicated BPM Message and BPM Signal content-rule actions as a
+higher-level alternative to typing the raw REST call in a `collective.webhook`
+payload by hand.
 
 ## Operaton
 
