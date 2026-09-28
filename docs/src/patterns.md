@@ -68,7 +68,28 @@ The `${uuid}` in the diagram above and `${uid}` used below look alike but are no
 
 `collective.bpmproxy` happens to register its *own*, differently named `${uuid}`/`${parent_uuid}` interpolation tokens for the same content's-UUID value (see its `adapters/substitutions.py`) -- installing only `collective.webhook`, as this playground does, `${uuid}` in a payload is not a registered token at all, and `plone.stringinterp`'s `string.Template.safe_substitute` leaves an unmatched placeholder as the literal text `"${uuid}"` rather than raising an error. Typing `${uuid}` instead of `${uid}` into a `collective.webhook` payload is therefore a mistake that fails silently: every instance would receive the identical, un-interpolated literal signal name, so every boundary event would fire together instead of only the matching document's own instance. Check what an add-on actually registers (`grep -r IStringSubstitution` in its source, or its `configure.zcml`) before relying on a placeholder name.
 
-Because a fresh instance was started with its `uuid` process variable set from `${uid}` in the first place (see "Complementary", above), both sides land on the same string, and only the matching instance's boundary event fires -- every other instance's subscription is for a different literal signal name and never sees the call.
+Because a fresh instance was started with its `uuid` process variable set from `${uid}` in the first place (see "Complementary", above), both sides land on the same string, and only the matching instance's boundary event fires -- every other instance's subscription is for a different literal signal name and never sees the call. The `uuid` variable is not optional in practice, either: Operaton evaluates a boundary event's EL expression as soon as its enclosing activity starts (creating the signal subscription), so an instance started *without* a `uuid` variable at all fails outright at that point (`Cannot resolve identifier 'uuid'`) rather than merely failing to correlate later.
+
+`````{grid} 1 1 2 2
+
+````{grid-item}
+```{figure} images/cockpit-content-lifecycle-running.png
+:alt: Operaton Cockpit showing a running Demo instance parked on Review page, with its two boundary signal events and the uuid/contentUrl/contentTitle process variables Plone set when it started
+:width: 100%
+
+Two documents, two independent instances, each parked on "Review page" and each carrying its own `uuid` -- Cockpit's Variables tab confirms `${uid}` actually reached Operaton.
+```
+````
+
+````{grid-item}
+```{figure} images/cockpit-content-lifecycle-history.png
+:alt: Operaton Cockpit's History audit log for a completed Demo instance, showing the boundarySignal "Content modified" firing and the process ending at "Ended: content modified"
+:width: 100%
+
+After editing that document in Plone, its own instance -- and only its own -- ends at "Ended: content modified"; the other stays untouched until its own document is removed.
+```
+````
+`````
 
 | Plone event | Content rule condition | `collective.webhook` call | BPMN element |
 |---|---|---|---|

@@ -119,9 +119,9 @@ Administrator Adds Two Documents
     ...    eyebrow=Content lifecycle · 2 / 5
     ...    title=Administrator    subtitle=Adding the two documents
     Go To    ${BASE_URL}
-    Add Content    Document    ${DOC_TITLE_MODIFIED}
+    Add Content    Page    ${DOC_TITLE_MODIFIED}
     Go To    ${BASE_URL}
-    Add Content    Document    ${DOC_TITLE_DELETED}
+    Add Content    Page    ${DOC_TITLE_DELETED}
     Take Screenshot    ${SHOTS_DIR}/webhook-content-lifecycle-documents-added.png
     [Teardown]    End Actor Turn
 

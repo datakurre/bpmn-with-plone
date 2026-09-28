@@ -8,6 +8,10 @@
 .venv/
 __pycache__/
 
+# screencast.run --take output (videos, screenshots, timelines) -- curated
+# screenshots get copied into docs/src/images/ instead of committing this
+/.takes/
+
 # Agent skills installed with `make skills` in docs/
 /.skills/
 /.agents/skills/plone-doc-style

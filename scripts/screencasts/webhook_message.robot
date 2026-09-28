@@ -74,7 +74,7 @@ Administrator Adds A Document
     ...    eyebrow=Webhook + Operaton message · 2 / 2
     ...    title=Administrator    subtitle=Adding content to trigger the webhook
     Go To    ${BASE_URL}
-    Add Content    Document    ${DOC_TITLE}
+    Add Content    Page    ${DOC_TITLE}
     Take Screenshot    ${SHOTS_DIR}/webhook-message-document-added.png
     [Teardown]    End Actor Turn
 

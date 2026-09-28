@@ -66,7 +66,7 @@ Administrator Configures The Webhook Rule
     ...    ${ENGINE_URL}/signal
     ...    ${PAYLOAD}
     ...    POST
-    ...    Publish
+    ...    publish
     Take Screenshot    ${SHOTS_DIR}/webhook-signal-rule-applied.png
     [Teardown]    End Actor Turn
 
@@ -79,7 +79,7 @@ Administrator Publishes A Document
     ...    eyebrow=Webhook + Operaton signal · 2 / 2
     ...    title=Administrator    subtitle=Publishing content to trigger the webhook
     Go To    ${BASE_URL}
-    Add Content    Document    ${DOC_TITLE}
+    Add Content    Page    ${DOC_TITLE}
     Publish Current Document
     Take Screenshot    ${SHOTS_DIR}/webhook-signal-document-published.png
     [Teardown]    End Actor Turn

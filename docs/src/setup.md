@@ -55,6 +55,21 @@ without embedding process-engine code in Plone.
    Replace the example URL with a value from the Plone content item. The
    webhook add-on supports interpolated JSON; use its documentation for the
    supported interpolation syntax.
+
+   ```{figure} images/webhook-content-rule.png
+   :alt: A saved Plone content rule named "Notify Operaton of new content", showing its Call webhook action as "POST http://localhost:8800/engine-rest/message (verbose)" and applied to the whole site
+   :width: 80%
+   :align: center
+
+   A configured rule, as Plone shows it back after saving: the action's summary line is the quickest way to confirm the URL, method and verbose flag actually took.
+   ```
+
+   `collective.webhook`'s "Verbose logging" field is required in the form's
+   own validation, even though it is a plain checkbox -- leave it unchecked
+   (an unchecked HTML checkbox submits nothing at all, not `false`) and
+   saving fails with "Please check this box if you want to proceed."; check
+   it to save, which usefully also logs the request and response while you
+   are still setting things up.
 4. Trigger the rule with test content and verify both the webhook request and
    the resulting process instance in Operaton.
 

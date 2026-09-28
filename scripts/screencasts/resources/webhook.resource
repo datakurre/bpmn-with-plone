@@ -64,10 +64,11 @@ Add Webhook Content Rule
     ...    apply the rule to the whole site.
     ...
     ...    When `event` is "Workflow state changed", pass one or more
-    ...    `transitions` to also add Plone's own "Workflow transition"
-    ...    condition, so the webhook only fires for those transitions --
-    ...    otherwise every occurrence of `event` anywhere on the site calls
-    ...    it.
+    ...    `transitions` -- by their internal id (e.g. "publish", "retract"),
+    ...    not their visible title -- to also add Plone's own "Workflow
+    ...    transition" condition, so the webhook only fires for those
+    ...    transitions -- otherwise every occurrence of `event` anywhere on
+    ...    the site calls it.
     [Arguments]    ${title}    ${event}    ${url}    ${payload}
     ...    ${method}=POST    @{transitions}
     Go To    ${BASE_URL}/@@rules-controlpanel
@@ -77,17 +78,16 @@ Add Webhook Content Rule
     Human Click    role=button[name="Save"]
     IF    ${{ len($transitions) > 0 }}
         Select Option    \#contentrules-add-condition    Workflow transition
-        Human Click    role=button[name="Add"]
-        FOR    ${transition}    IN    @{transitions}
-            Check    label=${transition}
-        END
+        Human Click    button[name="form.button.AddCondition"]
+        Select Option    \#form-widgets-wf_transitions    ${transitions}
         Human Click    role=button[name="Save"]
     END
     Select Option    \#contentrules-add-action    Call webhook
-    Human Click    role=button[name="Add"]
+    Human Click    button[name="form.button.AddAction"]
     Human Type    label=Webhook URL    ${url}
     Select Option    label=Call method    ${method}
     Human Type    label=JSON payload    ${payload}
+    Check    label=Verbose logging
     Human Click    role=button[name="Save"]
     Human Click    role=button[name="Apply rule on the whole site"]
 
@@ -128,9 +128,9 @@ Log In To Cockpit
     ...    session into the recorded one.
     [Arguments]    ${username}=demo    ${password}=demo
     Start Scratch Context    ${COCKPIT_URL}/
-    Human Type    \#username    ${username}
-    Human Type    \#password    ${password}
-    Human Click    role=button[name="Login"]
+    Human Type    role=textbox[name="Username"]    ${username}
+    Human Type    role=textbox[name="Password"]    ${password}
+    Human Click    role=button[name="Log in"]
     ${state}=    Get Storage State
     End Scratch Context
     RETURN    ${state}

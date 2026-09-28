@@ -9,7 +9,9 @@ introduced in [`docs/src/patterns.md`](../../docs/src/patterns.md)'s
 "Content lifecycle signals" section and
 [`docs/src/setup.md`](../../docs/src/setup.md)'s "Plone" section, worked
 through step by step against this repository's own playground
-(`make install && make start`; see the repository README).
+(`make install && make start`; see the repository README). All four have
+been run for real against that playground -- not just dry-run `screencast
+check` -- and `screencast verify` reports no findings for any of them.
 
 Each story reads like a screenplay: an Administrator configures the content
 rule(s) through Plone's UI, then triggers them, while Operaton Cockpit
@@ -53,9 +55,13 @@ story, the rest are small supporting keywords the four stories share:
   [`collective.webhook`'s own documentation](https://collective.github.io/collective.webhook/)
   describes: add a rule, pick its triggering event, add a "Call webhook"
   action with a URL/method/JSON payload, and apply it to the whole site.
-  Passing one or more `transitions` also adds Plone's built-in "Workflow
-  transition" condition (used by the signal scenario to fire only on
-  Publish).
+  Passing one or more `transitions` -- by their internal id (e.g.
+  `publish`, not the visible title "Publish") -- also adds Plone's built-in
+  "Workflow transition" condition (used by the signal scenario to fire only
+  on that transition). It also checks "Verbose logging": that field is
+  required despite being a plain checkbox (an unchecked box submits
+  nothing, and the field has no default), so leaving it unchecked fails to
+  save.
 - **`Wait For Process Instance In Cockpit`** confirms, from Operaton's own
   side, that a webhook call actually arrived: it polls a process
   definition's instance list in Cockpit until an instance shows up, then
@@ -67,7 +73,10 @@ story, the rest are small supporting keywords the four stories share:
   never appears in Cockpit's History tab.
 - `Log In To Cockpit`, `Add Content`, `Publish Current Document`, `Edit
   Current Document` and `Delete Current Document` are the small UI actions
-  the stories trigger the rules with.
+  the stories trigger the rules with. All four stories add a "Page" -- the
+  Plone 6 UI's visible name for the `Document` content type; `Add Content`
+  matches by what "Add new…" actually shows, not the underlying portal
+  type.
 
 ## Running a scenario
 

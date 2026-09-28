@@ -77,7 +77,7 @@ Administrator Adds A Document
     ...    eyebrow=Webhook + Operaton process start · 2 / 2
     ...    title=Administrator    subtitle=Adding content to trigger the webhook
     Go To    ${BASE_URL}
-    Add Content    Document    ${DOC_TITLE}
+    Add Content    Page    ${DOC_TITLE}
     Take Screenshot    ${SHOTS_DIR}/webhook-process-start-document-added.png
     [Teardown]    End Actor Turn
 
